@@ -36,3 +36,4 @@ HTTPS로 handshake를 할때 어느 도메인에 접속하고싶은지 서버에
 이 문제의 해결책이 TLS1.3의 확장으로 제안된 Encrypted SNI이다.       
       
 server_name을 송신할때 서버로부터 공개키를 DNS로취득한 후 암호화하여 서버에 송신한다. 이때 DNS over HTTPS 또는 DNS over TLS를 이용한다.    
+[DNS 서버 점검](https://dnscheck.nic.or.kr/guideline/GUIDE_CHK_MAN_01.html)
