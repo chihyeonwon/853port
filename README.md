@@ -38,3 +38,105 @@ HTTPS로 handshake를 할때 어느 도메인에 접속하고싶은지 서버에
 server_name을 송신할때 서버로부터 공개키를 DNS로취득한 후 암호화하여 서버에 송신한다. 이때 DNS over HTTPS 또는 DNS over TLS를 이용한다.    
 
 [DNS 서버 점검](https://dnscheck.nic.or.kr/guideline/GUIDE_CHK_MAN_01.html)
+
+# 포트 853 분석 보고서
+
+## 1. 개요
+포트 **853**은 **DNS over TLS (DoT, DNS over Transport Layer Security)** 프로토콜에서 사용되는 표준 포트입니다. DoT는 DNS 질의 및 응답을 암호화하여 **보안성과 개인정보 보호를 강화**하는 역할을 합니다.
+
+본 보고서에서는 포트 853의 개요, 특징, 보안성, 장점 및 단점을 분석합니다.
+
+---
+
+## 2. 포트 853 및 DNS over TLS(DoT)의 개념
+
+### 2.1 DNS over TLS (DoT)란?
+기존 DNS(포트 53 기반)는 평문(Plaintext)으로 작동하여 **중간자 공격(Man-in-the-Middle, MITM)**에 취약했습니다.  
+DNS over TLS는 **TLS(Transport Layer Security) 암호화 계층을 추가**하여 이러한 보안 취약점을 해결합니다.
+
+### 2.2 포트 853의 역할
+- **DoT의 표준 포트**로 사용됨 (RFC 7858에 정의됨).
+- 클라이언트와 DNS 리졸버 간의 **TLS 세션을 통한 암호화된 DNS 요청** 처리.
+- 일반적인 **포트 53 DNS 요청보다 보안성이 높음**.
+
+---
+
+## 3. 포트 853의 주요 특징
+
+| 항목 | 설명 |
+|------|------|
+| **프로토콜** | TCP 기반 |
+| **보안 방식** | TLS 암호화 적용 |
+| **RFC 표준** | RFC 7858 (DNS over TLS) |
+| **기본 사용 사례** | DNS 질의/응답 보안 강화 |
+| **대체 프로토콜** | DNS over HTTPS (DoH, 포트 443) |
+
+---
+
+## 4. 포트 853의 장점 및 단점
+
+### 4.1 장점
+✅ **보안 강화**  
+- DNS 요청이 **암호화**되어 MITM 공격 및 스누핑 방지.  
+
+✅ **프라이버시 보호**  
+- ISP나 해커가 사용자의 DNS 요청을 감청할 수 없음.  
+
+✅ **무결성 보장**  
+- TLS를 통해 **데이터 변조 방지** 기능 제공.  
+
+✅ **표준화된 보안 프로토콜**  
+- **RFC 7858**에 의해 공식 표준으로 정의됨.  
+
+---
+
+### 4.2 단점
+❌ **오버헤드 증가**  
+- TLS 핸드셰이크 및 암호화 처리로 인해 일반 DNS(포트 53)보다 성능 저하 가능.  
+
+❌ **방화벽 차단 가능성**  
+- 일부 네트워크 방화벽에서 포트 853을 차단하여 DoT 사용 불가능.  
+
+❌ **UDP 미지원**  
+- 일반 DNS(포트 53)는 UDP 기반이지만, DoT는 TCP만 사용하여 네트워크 부하 증가 가능.  
+
+---
+
+## 5. 포트 853과 관련된 보안 고려사항
+
+### 5.1 DoT 보안 최적화 방안
+- 최신 TLS 버전(예: TLS 1.3) 사용.
+- **공개된 인증서(공개키) 검증**을 통한 신뢰성 확보.
+- DoT 서버와의 **엄격한 검증 및 핀닝(Pinning) 적용**.
+
+### 5.2 포트 차단 우회 방법
+- DoT를 차단하는 네트워크에서는 **DNS over HTTPS(DoH, 포트 443)** 사용 가능.
+- VPN 또는 프록시를 통해 우회 가능.
+
+---
+
+## 6. 포트 853 vs. 포트 53 vs. 포트 443 비교
+
+| 포트 번호 | 프로토콜 | 암호화 | 주요 용도 |
+|----------|---------|--------|----------|
+| **53**  | DNS     | ❌ (평문) | 전통적인 DNS 질의/응답 |
+| **853** | DoT     | ✅ (TLS 암호화) | 보안 강화된 DNS over TLS |
+| **443** | DoH     | ✅ (HTTPS 기반) | DNS over HTTPS |
+
+- **DoT(포트 853)과 DoH(포트 443)** 모두 암호화를 지원하지만, DoH는 HTTPS 트래픽과 섞여 방화벽에서 차단하기 어려움.  
+- **DoT는 순수한 DNS 트래픽을 보호**하는 데 초점이 맞춰져 있음.  
+
+---
+
+## 7. 결론
+포트 853은 **DNS 보안 강화를 위해 설계된 포트**로, DNS 요청을 TLS 암호화를 통해 보호하는 역할을 합니다. 기존 DNS(포트 53)의 보안 취약점을 보완하지만, 성능 오버헤드 및 방화벽 차단 문제를 고려해야 합니다.
+
+만약 DoT가 차단된 환경이라면, **포트 443을 사용하는 DoH(DNS over HTTPS) 대안**을 고려할 수 있습니다.
+
+---
+
+## 8. 참고 자료
+- [RFC 7858 - Specification for DNS over TLS](https://datatracker.ietf.org/doc/html/rfc7858)
+- [Cloudflare - DNS over TLS](https://developers.cloudflare.com/1.1.1.1/encryption/dns-over-tls/)
+- [Google Public DNS over TLS](https://developers.google.com/speed/public-dns/docs/dns-over-tls)
+
